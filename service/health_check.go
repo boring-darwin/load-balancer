@@ -15,6 +15,7 @@ func IsServerUp(serverUrl string) bool {
 	}
 
 	if resp.StatusCode == 200 {
+		log.Printf("able to reach %s server\n", serverUrl)
 		return true
 	}
 

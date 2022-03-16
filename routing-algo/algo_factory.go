@@ -9,13 +9,13 @@ var numberOfBackendServers int
 
 type algoFactory interface {
 	InitServers(listOfServers []string)
-	GetServer() models.Backend
+	GetServer() (models.Backend, error)
 }
 
 type Algo struct {
 	name        string
 	InitServers func(listOfServers []string)
-	GetServer   func() models.Backend
+	GetServer   func() (models.Backend, error)
 }
 
 func GetAlgo(algo_name string) *Algo {

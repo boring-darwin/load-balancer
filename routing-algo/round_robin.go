@@ -1,8 +1,10 @@
 package routingalgo
 
 import (
+	"errors"
 	"fmt"
 	"load-balancer/models"
+	"load-balancer/service"
 	"log"
 	"net/http/httputil"
 	"net/url"
@@ -26,7 +28,9 @@ func (a *roundrobin) InitServers(arrOfServers []string) {
 		route, _ := url.Parse(element)
 
 		backend := &models.Backend{
-			Proxy: httputil.NewSingleHostReverseProxy(route),
+			Url:     element,
+			Healthy: service.IsServerUp(element),
+			Proxy:   httputil.NewSingleHostReverseProxy(route),
 		}
 
 		lb = append(lb, backend)
@@ -37,18 +41,28 @@ func (a *roundrobin) InitServers(arrOfServers []string) {
 	listOfBackend = models.BackendList{BL: lb}
 }
 
-func (a *roundrobin) GetServer() models.Backend {
+func (a *roundrobin) GetServer() (models.Backend, error) {
 
 	currentServer++
+	var numberOfDownServer int = 0
 
-	for !listOfBackend.BL[currentServer].Healthy {
-		currentServer++
-	}
-
-	if currentServer == numberOfBackendServers {
+	if currentServer >= numberOfBackendServers {
 		currentServer = 0
 	}
+
+	for !listOfBackend.BL[currentServer].Healthy {
+		numberOfDownServer++
+		currentServer++
+		if currentServer >= numberOfBackendServers {
+			currentServer = 0
+		}
+		if numberOfDownServer == numberOfBackendServers {
+			log.Println("No Backend Server to serve the request")
+			return *listOfBackend.BL[0], errors.New("no server up to serve")
+		}
+	}
+
 	fmt.Println(currentServer)
-	return *listOfBackend.BL[currentServer]
+	return *listOfBackend.BL[currentServer], nil
 
 }

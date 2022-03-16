@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	routingalgo "load-balancer/routing-algo"
+	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -28,6 +29,15 @@ func main() {
 
 func test(w http.ResponseWriter, r *http.Request) {
 
-	a.GetServer().Proxy.ServeHTTP(w, r)
+	t, err := a.GetServer()
+
+	if err != nil {
+		log.Println("unable to forward the call")
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "no backend server up to serve the request")
+
+	} else {
+		t.Proxy.ServeHTTP(w, r)
+	}
 
 }

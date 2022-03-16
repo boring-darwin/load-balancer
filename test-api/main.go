@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -20,6 +21,6 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func isHealthy(w http.ResponseWriter, r *http.Request) {
-
+	log.Println("Health check called")
 	fmt.Fprintf(w, "I am healthy")
 }

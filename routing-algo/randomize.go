@@ -1,8 +1,10 @@
 package routingalgo
 
 import (
+	"errors"
 	"load-balancer/models"
 	"load-balancer/service"
+	"log"
 	"math/rand"
 	"net/http/httputil"
 	"net/url"
@@ -40,14 +42,20 @@ func (a *random) InitServers(arrOfServers []string) {
 	listOfBackend = models.BackendList{BL: lb}
 }
 
-func (a *random) GetServer() models.Backend {
+func (a *random) GetServer() (models.Backend, error) {
 
 	rand.Seed(time.Now().UnixNano())
 	num := 0 + rand.Intn(numberOfBackendServers-0)
-
+	var numberOfDownServer int = 0
 	for !listOfBackend.BL[num].Healthy {
+		numberOfDownServer++
 		num = 0 + rand.Intn(numberOfBackendServers-0)
+
+		if numberOfDownServer == numberOfBackendServers {
+			log.Println("No Backend server aviablabe to server the request")
+			return *listOfBackend.BL[num], errors.New("no server up to serve")
+		}
 	}
 
-	return *listOfBackend.BL[num]
+	return *listOfBackend.BL[num], nil
 }
