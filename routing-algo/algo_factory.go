@@ -51,6 +51,7 @@ func GetAlgo(algo_name string) *Algo {
 	}
 }
 
+// Get the list of all the configured backend server.
 func GetAllBackendServerAsList() models.AllBackendServerResponse {
 
 	resp := models.AllBackendServerResponse{}
@@ -66,6 +67,7 @@ func GetAllBackendServerAsList() models.AllBackendServerResponse {
 	return resp
 }
 
+// Add new server to the existing list of backend server.
 func AddNewBackendServer(serverList []string) {
 
 	for _, server := range serverList {
