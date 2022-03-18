@@ -15,6 +15,11 @@ func forwardProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if u.Path == "/server/add" {
+		addBackendServer(w, r)
+		return
+	}
+
 	t, err := a.GetServer()
 
 	if err != nil {
