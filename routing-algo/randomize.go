@@ -2,8 +2,8 @@ package routingalgo
 
 import (
 	"errors"
+	"load-balancer/health"
 	"load-balancer/models"
-	"load-balancer/service"
 	"log"
 	"math/rand"
 	"net/http/httputil"
@@ -30,7 +30,7 @@ func (a *random) InitServers(arrOfServers []string) {
 		// service.isServerUp(element)
 		backend := &models.Backend{
 			Url:     element,
-			Healthy: service.IsServerUp(element),
+			Healthy: health.IsServerUp(element),
 			Proxy:   httputil.NewSingleHostReverseProxy(route),
 		}
 

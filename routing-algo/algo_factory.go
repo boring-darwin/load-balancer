@@ -47,3 +47,18 @@ func GetAlgo(algo_name string) *Algo {
 		}
 	}
 }
+
+func GetAllBackendServerAsList() models.AllBackendServerResponse {
+
+	resp := models.AllBackendServerResponse{}
+
+	for _, r := range listOfBackend.BL {
+		i := models.Info{
+			Url:     r.Url,
+			Healthy: r.Healthy,
+		}
+		resp.Servers = append(resp.Servers, i)
+	}
+
+	return resp
+}
