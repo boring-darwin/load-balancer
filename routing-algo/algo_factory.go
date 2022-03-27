@@ -72,13 +72,17 @@ func AddNewBackendServer(serverList []string) {
 
 	for _, server := range serverList {
 
+		health.ServerToBeChecked <- server
 		route, _ := url.Parse(server)
 		newBackendServer := &models.Backend{
 			Url:     server,
 			Proxy:   httputil.NewSingleHostReverseProxy(route),
-			Healthy: health.IsServerUp(server),
+			Healthy: <-health.ServerHealthResult,
 		}
 		listOfBackend.BL = append(listOfBackend.BL, newBackendServer)
 	}
+}
+
+func UpdateTheServerHealth(updatedHealthStatus []string) {
 
 }

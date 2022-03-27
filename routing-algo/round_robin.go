@@ -27,9 +27,10 @@ func (a *roundrobin) InitServers(arrOfServers []string) {
 	for _, element := range arrOfServers {
 		route, _ := url.Parse(element)
 
+		health.ServerToBeChecked <- element
 		backend := &models.Backend{
 			Url:     element,
-			Healthy: health.IsServerUp(element),
+			Healthy: <-health.ServerHealthResult,
 			Proxy:   httputil.NewSingleHostReverseProxy(route),
 		}
 

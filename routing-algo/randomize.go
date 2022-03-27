@@ -28,14 +28,13 @@ func (a *random) InitServers(arrOfServers []string) {
 		route, _ := url.Parse(element)
 
 		// service.isServerUp(element)
+		health.ServerToBeChecked <- element
 		backend := &models.Backend{
 			Url:     element,
-			Healthy: health.IsServerUp(element),
+			Healthy: <-health.ServerHealthResult,
 			Proxy:   httputil.NewSingleHostReverseProxy(route),
 		}
-
 		lb = append(lb, backend)
-
 	}
 
 	numberOfBackendServers = len(lb)
